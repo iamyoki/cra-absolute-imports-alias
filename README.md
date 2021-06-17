@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# Absolute Imports Path in CRA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Configure `jsconfig.json`
 
-## Available Scripts
+Create a `jsconfig.json` file at your root directory.
 
-In the project directory, you can run:
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}
+```
 
-### `yarn start`
+compilerOptions:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- baseUrl - relative to which root dir
+- jsx - must provide 'react' to let vscode know it's react project to enable auto-imports behavior.
+- paths - alias mapping, must using `craco-alias` if this prop provided
+- exclude - just node_modules
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Configure Craco & Craco Alias
 
-### `yarn test`
+If we need alias mapping ability, we should use `@craco/craco` to inject webpack configuration without ejecting the CRA webpack stuff.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Install
 
-### `yarn build`
+```shell
+yarn add @craco/craco craco-alias -D
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Create `craco.config.js` in root directory
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```js
+const CracoAlias = require('craco-alias')
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+module.exports = {
+  plugins: [
+    {
+      // See docs in https://www.npmjs.com/package/craco-alias
+      plugin: CracoAlias,
+      options: {
+        source: 'jsconfig'
+      }
+    }
+  ]
+}
+```
